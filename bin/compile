@@ -1,0 +1,36 @@
+#!/bin/sh
+
+
+# bin/compile BUILD_DIR CACHE_DIR ENV_DIR
+
+# http://s3.amazonaws.com/downloads.basho.com/erlang/otp_src_R16B02-basho5.tar.gz
+
+echo "-----> changing to the BUILD DIR"
+cd $1
+
+# http://docs.basho.com/riak/latest/quickstart/
+echo "-----> downloading Erlang R16B02-basho5 on CACHE_DIR: $2"
+cd $2
+if [ -f otp_src_R16B02-basho5.tar.gz ] ; then
+	# ERLANG INSTALLED
+else
+	curl -O http://s3.amazonaws.com/downloads.basho.com/erlang/otp_src_R16B02-basho5.tar.gz
+	tar xvf otp_src_R16B02-basho5.tar.gz
+	cd otp_src_R16B02-basho5
+
+	echo "-----> installing Erlang"
+	echo "-----> checking dependencies"
+	sudo apt-get install build-essential libncurses5-dev openssl libssl-dev fop xsltproc unixodbc-dev
+
+	echo "-----> building Erlang"
+	./configure && make && sudo make install
+
+	echo "-----> removing Erlang .tar.gz"
+	rm otp_src_R16B02-basho5.tar.gz
+	# rm -fr otp_src_R16B02-basho5
+
+fi
+
+cd $1
+echo "-----> building installing Riak: make rel from BUILD_DIR: $1"
+make rel
