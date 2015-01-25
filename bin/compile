@@ -1,37 +1,72 @@
 #!/bin/bash
 
+# inspiration https://github.com/archaelus/heroku-buildpack-erlang/blob/master/bin/compile
 
-# bin/compile BUILD_DIR CACHE_DIR ENV_DIR
+##
+# usage: bin/compile <build-dir> <cache-dir>
 
-# http://s3.amazonaws.com/downloads.basho.com/erlang/otp_src_R16B02-basho5.tar.gz
+set -e
+bpdir=$(cd $(dirname $(dirname $0)); pwd)
+mkdir -p "$1" "$2"
+build=$(cd "$1/" && pwd)
+test -z ${build} && exit
+cache=$(cd "$2/" && pwd)
+test -z ${cache} && exit
 
-echo "-----> changing to the BUILD_DIR: $1"
-cd $1
+ERLROOT=${build}/otp
+PROFILE=${HOME}/.profile.d
 
-# http://docs.basho.com/riak/latest/quickstart/
-echo "-----> downloading Erlang R16B02-basho5"
-
-	curl -O http://s3.amazonaws.com/downloads.basho.com/erlang/otp_src_R16B02-basho5.tar.gz
-	tar xf otp_src_R16B02-basho5.tar.gz
-	cd otp_src_R16B02-basho5
-
-	echo "-----> installing Erlang"
-	echo "-----> checking dependencies"
-	sudo apt-get install build-essential libncurses5-dev openssl libssl-dev fop xsltproc unixodbc-dev
-
-	echo "-----> configuring Erlang"
-	./configure > /dev/null
-	echo "-----> building Erlang"
-	make > /dev/null
-	echo "-----> install Erlang"
-	sudo make install > /dev/null
-
-	echo "-----> removing Erlang .tar.gz"
-	rm otp_src_R16B02-basho5.tar.gz
-	rm -fr otp_src_R16B02-basho5
+echo "-------> apt-get install dependencies "
+apt-get install build-essential libncurses5-dev openssl libssl-dev fop xsltproc unixodbc-dev
 
 
+(
+    set -e
 
+    # Already cached?
+    test -f ${cache}/${tarball} && exit
 
-echo "-----> building installing Riak: make rel from BUILD_DIR: $1"
+    rm -rf ${cache}/* # be sure not to build up cruft
+    cd ${cache}
+    echo "-------> Fetching Erlang/OTP $ver"
+    curl -sO http://s3.amazonaws.com/downloads.basho.com/erlang/otp_src_R16B02-basho5.tar.gz || exit 1
+)
+
+echo "-------> Unpacking Erlang/OTP"
+mkdir -p ${ERLROOT}
+tar zxf ${cache}/${tarball} -C ${ERLROOT} --strip-components=2
+echo "-------> Installing Erlang/OTP"
+ln -s ${ERLROOT} /app/otp
+#${ERLROOT}/Install -minimal /app/otp
+echo "-----> configuring Erlang"
+./configure > /dev/null
+echo "-----> building Erlang"
+make > /dev/null
+echo "-----> install Erlang"
+make install > /dev/null
+
+PATH=/app/otp/bin:$PATH
+export PATH
+
+cd $build
 make rel
+#
+#if [ ! -e "rebar" ]; then
+#  echo "-----> Installing Rebar from buildpack"
+#  cp ${bpdir}/opt/rebar ./
+#fi
+#
+#echo "-----> Building with Rebar"
+#unset GIT_DIR
+#./rebar get-deps compile 2>&1 | sed -u 's/^/       /'
+#if [ ${PIPESTATUS[0]} -ne 0 ]; then
+#  echo "-----> Build failed"
+#  exit 1
+#fi
+#
+#if [ -f ${bpdir}/opt/otp.sh ]; then
+#  mkdir -p ${PROFILE}
+#  cp ${bpdir}/opt/otp.sh ${PROFILE}
+#fi
+
+echo "-----> Build succeeded"
