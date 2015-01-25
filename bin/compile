@@ -17,7 +17,8 @@ ERLROOT=${build}/otp
 PROFILE=${HOME}/.profile.d
 
 echo "-------> apt-get install dependencies "
-apt-get install build-essential libncurses5-dev openssl libssl-dev fop xsltproc unixodbc-dev
+echo "-------> skipeed"
+#apt-get install build-essential libncurses5-dev openssl libssl-dev fop xsltproc unixodbc-dev
 
 
 (
