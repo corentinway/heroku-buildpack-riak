@@ -12,15 +12,19 @@ cd $1
 echo "-----> downloading Erlang R16B02-basho5"
 
 	curl -O http://s3.amazonaws.com/downloads.basho.com/erlang/otp_src_R16B02-basho5.tar.gz
-	tar xvf otp_src_R16B02-basho5.tar.gz
+	tar xf otp_src_R16B02-basho5.tar.gz
 	cd otp_src_R16B02-basho5
 
 	echo "-----> installing Erlang"
 	echo "-----> checking dependencies"
 	sudo apt-get install build-essential libncurses5-dev openssl libssl-dev fop xsltproc unixodbc-dev
 
+	echo "-----> configuring Erlang"
+	./configure > /dev/null
 	echo "-----> building Erlang"
-	./configure && make && sudo make install
+	make > /dev/null
+	echo "-----> install Erlang"
+	sudo make install > /dev/null
 
 	echo "-----> removing Erlang .tar.gz"
 	rm otp_src_R16B02-basho5.tar.gz
