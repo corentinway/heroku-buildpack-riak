@@ -6,6 +6,7 @@
 # http://s3.amazonaws.com/downloads.basho.com/erlang/otp_src_R16B02-basho5.tar.gz
 
 echo "-----> changing to the BUILD_DIR: $1"
+ls -al
 cd $1
 
 # http://docs.basho.com/riak/latest/quickstart/
@@ -13,6 +14,7 @@ echo "-----> downloading Erlang R16B02-basho5"
 
 	curl -O http://s3.amazonaws.com/downloads.basho.com/erlang/otp_src_R16B02-basho5.tar.gz
 	tar zxf otp_src_R16B02-basho5.tar.gz
+	ls -al
 	cd otp_src_R16B02-basho5
 
 	echo "-----> installing Erlang"
@@ -20,10 +22,15 @@ echo "-----> downloading Erlang R16B02-basho5"
 	#apt-get install build-essential libncurses5-dev openssl libssl-dev fop xsltproc unixodbc-dev
 
 	echo "-----> configuring Erlang"
+	ls -al
 	./configure > /dev/null
+	
 	echo "-----> building Erlang"
+	ls -al
 	make > /dev/null
+	
 	echo "-----> install Erlang"
+	ls -al
 	sudo make install > /dev/null
 
 	echo "-----> removing Erlang .tar.gz"
