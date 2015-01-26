@@ -17,8 +17,12 @@ ERLROOT=${build}/otp
 PROFILE=${HOME}/.profile.d
 
 echo "-------> apt-get install dependencies "
-echo "-------> skipeed"
+echo "-------> skipped"
 #apt-get install build-essential libncurses5-dev openssl libssl-dev fop xsltproc unixodbc-dev
+
+echo "-------> cleaning build dir $build"
+rm -fr ${build}
+
 
 
 (
