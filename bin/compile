@@ -5,6 +5,10 @@
 
 # http://s3.amazonaws.com/downloads.basho.com/erlang/otp_src_R16B02-basho5.tar.gz
 
+echo "-----> BUILD_DIR: $1"
+echo "-----> CACHE_DIR: $2"
+echo "-----> ENV_DIR: $3"
+
 echo "-----> changing to the BUILD_DIR: $1"
 ls -al
 cd $1
